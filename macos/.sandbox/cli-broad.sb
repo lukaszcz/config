@@ -1,0 +1,23 @@
+(version 1)
+
+;; CLI sandbox profile
+
+(allow default)
+
+;; Prevent modifying the OS and system-wide libraries.
+(deny file-write*
+  (subpath "/System")
+  (subpath "/Library")
+  (subpath "/Applications")
+  (subpath "/opt")
+)
+
+(deny file-read* file-write*
+  (subpath "/Users/lukasz/.ssh")
+  (subpath "/Users/lukasz/.sandbox")
+  (subpath "/Users/lukasz/Library")
+  (subpath "/Users/lukasz/Documents")
+  (subpath "/Users/lukasz/Desktop")
+  (subpath "/Users/lukasz/Pictures")
+  (subpath "/Users/lukasz/Downloads")
+  (subpath "/Volumes"))

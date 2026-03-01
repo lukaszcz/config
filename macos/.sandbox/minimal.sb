@@ -1,0 +1,39 @@
+(version 1)
+
+;; Default deny
+(deny default)
+
+;; --- Baseline: allow the process to function ---
+(allow process*)
+(allow sysctl-read)
+(allow signal)
+(allow mach-lookup)
+(allow iokit-open)
+
+;; --- Read system libraries & OpenCode installation ---
+(allow file-read*
+  (subpath "/System")
+  (subpath "/Applications/OpenCode.app")
+  (subpath "/usr/bin")
+  (subpath "/usr/lib")
+  (subpath "/usr/share")
+  (subpath "/opt/homebrew")
+  (subpath "/usr/local"))
+
+;; --- Allow writing only to temp/cache locations ---
+(allow file-read* file-write*
+  (subpath "/private/var")
+  (subpath "/tmp"))
+
+;; --- Project access: ONLY this tree ---
+(allow file-read* file-write*
+  (subpath "/Users/lukasz/dev"))
+
+;; --- Networking (optional) ---
+;; Needed to call remote model APIs. Remove both to force offline.
+(allow network-outbound)
+(deny network-inbound)
+
+;; --- Execution control (minimal = deny exec) ---
+;; If you want to allow spawning tools like git/rg/node, add:
+(allow process-exec)

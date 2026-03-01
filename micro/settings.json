@@ -1,0 +1,10 @@
+{
+    "colorscheme": "simple",
+    "mkparents": true,
+    "rmtrailingws": true,
+    "reload": "auto",
+    "detectindent": true,
+    "tabstospaces": true,
+    "tabsize": 4,
+    "autoindent": true
+}

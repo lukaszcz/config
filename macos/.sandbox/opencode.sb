@@ -1,0 +1,25 @@
+(version 1)
+
+;; OpenCode sandbox profile (relaxed, dyld-safe)
+;;
+;; Strategy:
+;;   - Start from (allow default) so dyld and the OS can do all their
+;;     undocumented loader / cache work without crashing.
+;;   - Then selectively deny *writes* to critical system locations.
+;;   - Reads, execution, networking, mach services, etc. remain allowed.
+
+(allow default)
+
+;; Prevent modifying the OS and system-wide libraries.
+(deny file-write*
+  (subpath "/System")
+  (subpath "/Library")
+)
+
+(deny file-read* file-write*
+  (subpath "/Users/lukasz/Library/Keychains")
+  (subpath "/Users/lukasz/.ssh")
+  (subpath "/Users/lukasz/Documents")
+  (subpath "/Users/lukasz/Desktop")
+  (subpath "/Users/lukasz/Pictures")
+  (subpath "/Users/lukasz/Downloads"))

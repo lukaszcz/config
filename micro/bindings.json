@@ -1,0 +1,6 @@
+{
+    "Ctrl-u": "SelectToStartOfLine,Delete",
+    "Ctrl-r": "command:reload",
+    "Alt-r": "ToggleRuler",
+    "Alt-q": "command:textfilter par"
+}

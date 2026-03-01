@@ -1,0 +1,46 @@
+(version 1)
+
+;; CLI sandbox profile
+
+(allow default)
+
+;; Prevent modifying the OS and system-wide libraries.
+(deny file-write*
+  (subpath "/System")
+  (subpath "/Library")
+  (subpath "/Applications")
+  (subpath "/opt")
+)
+
+(deny file-read* file-write*
+  (subpath "/Users")
+  (subpath "/Volumes"))
+
+(allow file-read*
+  (regex #"^/Users/lukasz/\..*$"))
+
+(deny file-read*
+  (subpath "/Users/lukasz/.ssh")
+  (subpath "/Users/lukasz/.gnupg")
+  (subpath "/Users/lukasz/.aws")
+  (subpath "/Users/lukasz/.azure")
+  (subpath "/Users/lukasz/.config")
+  (subpath "/Users/lukasz/.cache")
+  (subpath "/Users/lukasz/.docker")
+  (subpath "/Users/lukasz/.kube")
+  (subpath "/Users/lukasz/.pypiprc")
+  (subpath "/Users/lukasz/.terraform.d")
+  (subpath "/Users/lukasz/.git-credentials")
+  (subpath "/Users/lukasz/.zsh_history")
+  (subpath "/Users/lukasz/.bash_history")
+  (subpath "/Users/lukasz/.zshrc")
+  (subpath "/Users/lukasz/.bashrc")
+  (subpath "/Users/lukasz/.profile"))
+
+(allow file-read* file-write*
+  (subpath "/Users/lukasz/dev")
+  (subpath "/Users/lukasz/.local/share/opencode")
+  (subpath "/Users/lukasz/.opencode")
+  (subpath "/Users/lukasz/.config/opencode")
+  (subpath "/Users/lukasz/.cache/opencode")
+  (subpath "/Users/lukasz/.local/share/opencode"))
