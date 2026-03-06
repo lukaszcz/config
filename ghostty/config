@@ -1,0 +1,90 @@
+# macOS keybindings
+
+# Make the left Option key send “Alt/Meta”
+macos-option-as-alt = left
+
+keybind = cmd+arrow_left=csi:H
+keybind = cmd+arrow_right=csi:F
+
+clipboard-read = allow
+
+keybind = shift+cmd+c=copy_to_clipboard
+
+keybind = cmd+a=text:\x01
+keybind = cmd+b=text:\x02
+keybind = cmd+c=text:\x03
+keybind = cmd+d=text:\x04
+keybind = cmd+e=text:\x05
+keybind = cmd+f=text:\x06
+keybind = cmd+g=text:\x07
+# keybind = cmd+h=text:\x08
+keybind = cmd+i=text:\x09
+keybind = cmd+j=text:\x0a
+keybind = cmd+k=text:\x0b
+keybind = cmd+l=text:\x0c
+# keybind = cmd+m=text:\x0d
+# keybind = cmd+n=text:\x0e
+keybind = cmd+o=text:\x0f
+keybind = cmd+p=text:\x10
+# keybind = cmd+q=text:\x11
+keybind = cmd+r=text:\x12
+keybind = cmd+s=text:\x13
+# keybind = cmd+t=text:\x14
+keybind = cmd+u=text:\x15
+# keybind = cmd+v=text:\x16
+# keybind = cmd+w=text:\x17
+keybind = cmd+x=text:\x18
+keybind = cmd+y=text:\x19
+keybind = cmd+z=text:\x1a
+
+# This is the configuration file for Ghostty.
+#
+# This template file has been automatically created at the following
+# path since Ghostty couldn't find any existing config files on your system:
+#
+#   /Users/lukasz/Library/Application Support/com.mitchellh.ghostty/config
+#
+# The template does not set any default options, since Ghostty ships
+# with sensible defaults for all options. Users should only need to set
+# options that they want to change from the default.
+#
+# Run `ghostty +show-config --default --docs` to view a list of
+# all available config options and their default values.
+#
+# Additionally, each config option is also explained in detail
+# on Ghostty's website, at https://ghostty.org/docs/config.
+#
+# Ghostty can reload the configuration while running by using the menu
+# options or the bound key (default: Command + Shift + comma on macOS and
+# Control + Shift + comma on other platforms). Not all config options can be
+# reloaded while running; some only apply to new windows and others may require
+# a full restart to take effect.
+
+theme = GitHub Dark Default
+
+# Config syntax crash course
+# ==========================
+# # The config file consists of simple key-value pairs,
+# # separated by equals signs.
+# font-family = Iosevka
+# window-padding-x = 2
+#
+# # Spacing around the equals sign does not matter.
+# # All of these are identical:
+# key=value
+# key= value
+# key =value
+# key = value
+#
+# # Any line beginning with a # is a comment. It's not possible to put
+# # a comment after a config option, since it would be interpreted as a
+# # part of the value. For example, this will have a value of "#123abc":
+# background = #123abc
+#
+# # Empty values are used to reset config keys to default.
+# key =
+#
+# # Some config options have unique syntaxes for their value,
+# # which is explained in the docs for that config option.
+# # Just for example:
+# resize-overlay-duration = 4s 200ms
