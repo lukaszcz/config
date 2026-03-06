@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+      "hol": {
+	  "type": "local",
+	  "command": ["/Users/lukasz/dev/vyperlang/hol4-mcp/hol4_mcp_server.sh"],
+	  "timeout": 600000
+      }
+  }
+}

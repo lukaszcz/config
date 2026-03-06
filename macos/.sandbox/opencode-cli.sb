@@ -13,14 +13,11 @@
 )
 
 (deny file-read* file-write*
-  (subpath "/Users")
   (subpath "/Volumes"))
 
-(allow file-read*
-  (regex #"^/Users/lukasz/\..*$"))
-
-(deny file-read*
+(deny file-read* file-write*
   (subpath "/Users/lukasz/.ssh")
+  (subpath "/Users/lukasz/.sandbox")
   (subpath "/Users/lukasz/.gnupg")
   (subpath "/Users/lukasz/.aws")
   (subpath "/Users/lukasz/.azure")
@@ -35,7 +32,12 @@
   (subpath "/Users/lukasz/.bash_history")
   (subpath "/Users/lukasz/.zshrc")
   (subpath "/Users/lukasz/.bashrc")
-  (subpath "/Users/lukasz/.profile"))
+  (subpath "/Users/lukasz/.profile")
+  (subpath "/Users/lukasz/Library")
+  (subpath "/Users/lukasz/Documents")
+  (subpath "/Users/lukasz/Desktop")
+  (subpath "/Users/lukasz/Pictures")
+  (subpath "/Users/lukasz/Downloads"))
 
 (allow file-read* file-write*
   (subpath "/Users/lukasz/dev")

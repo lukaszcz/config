@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+	"hol": {
+	    "command": "/Users/lukasz/dev/vyperlang/hol4-mcp/hol4_mcp_server.sh",
+	    "args": [],
+	    "env": {}
+	}
+    }
+}
