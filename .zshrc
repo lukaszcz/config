@@ -3,12 +3,17 @@
 
 [ -f "/Users/lukasz/.ghcup/env" ] && source "/Users/lukasz/.ghcup/env"
 
-export PATH="/Users/lukasz/dev/vyperlang/HOL/bin:/Users/lukasz/.local/bin:$PATH"
+export GOPATH="$HOME/.local/go"
+export PATH="$HOME/dev/vyperlang/HOL/bin:$HOME/.local/bin:$HOME/.local/go/bin:$PATH"
 
 export EDITOR=micro
 export VISUAL=micro
 
 alias ls="ls --color -h"
+alias pg="less -r"
+
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
 
 source <(fzf --zsh)
 
@@ -32,3 +37,5 @@ export HOLDIR="$HOME/dev/vyperlang/HOL"
 export VFMDIR="$HOME/dev/vyperlang/verifereum"
 export VYPER_HOL="$HOME/dev/vyperlang/vyper-hol"
 export VYPERDIR="$HOME/dev/vyperlang/vyper"
+
+export WORDCHARS="*?_.~=&!#$%^"
