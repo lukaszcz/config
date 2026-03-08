@@ -133,6 +133,7 @@ install_src() {
   local build_root="${TMP_DIR}/src-${RANDOM}-${RANDOM}"
   local archive_path="${build_root}/${archive_name}"
   local src_dir=""
+  local justfile=""
 
   mkdir -p "${build_root}" "${LOCAL_PREFIX}"
 
@@ -144,16 +145,30 @@ install_src() {
     src_dir="${build_root}"
   fi
 
-  [[ -x "${src_dir}/configure" ]] || {
-    echo "error: ${url} did not unpack to a configure-based source tree" >&2
-    exit 1
-  }
+  if [[ -f "${src_dir}/justfile" ]]; then
+    justfile="${src_dir}/justfile"
+  elif [[ -f "${src_dir}/Justfile" ]]; then
+    justfile="${src_dir}/Justfile"
+  fi
 
   (
     cd "${src_dir}"
-    ./configure --prefix="${LOCAL_PREFIX}"
-    make
-    make install
+
+    if [[ -n "${justfile}" ]] && just --justfile "${justfile}" --list | sed 's/^[[:space:]]*//' | grep -Eq '^install($|[[:space:]])'; then
+      just --justfile "${justfile}" install
+    elif [[ -x "./configure" && -f "./Makefile" ]]; then
+      ./configure --prefix="${LOCAL_PREFIX}"
+      make
+      make install
+    elif [[ -f "./go.mod" ]]; then
+      mkdir -p "${LOCAL_PREFIX}/bin"
+      GOBIN="${LOCAL_PREFIX}/bin" go install .
+    elif [[ -f "./Cargo.toml" ]]; then
+      cargo install --path . --root "${LOCAL_PREFIX}"
+    else
+      echo "error: ${url} did not unpack to a supported source tree" >&2
+      exit 1
+    fi
   )
 }
 
