@@ -196,6 +196,15 @@ install_git() {
   install_src_tree "${repo_dir}" "${url}@${ref}"
 }
 
+if_os() {
+  local expected_os="${1:?usage: if_os os command [args...]}"
+  local cmd="${2:?usage: if_os os command [args...]}"
+  shift 2
+
+  [[ "${OS}" == "${expected_os}" ]] || return 0
+  "${cmd}" "$@"
+}
+
 main() {
   parse_args "$@"
   detect_system
@@ -204,18 +213,29 @@ main() {
 
   mkdir -p "$HOME/.local/bin"
 
+  if_os linux install_pkg zsh
+
   install_pkg gcc
   install_pkg go
+  install_pkg rustup
 
   install_pkg bat
   install_pkg fzf
   install_pkg micro
   install_pkg yazi
-  install_pkg_alt delta git-delta
+  install_pkg_alt git-delta delta
   install_pkg par
+  install_pkg bfs
 
+  install_pkg bash-completion
+
+  install_git git@github.com:lukaszcz/mcat.git develop
+
+  bash ./setup-git.sh
   bash ./setup-micro.sh
   bash ./setup-yazi.sh
+
+  install_git git@github.com:lukaszcz/micro-syntax-sml-hol4.git main
 
   if [[ -x /usr/bin/batcat ]] && ! command -v bat >/dev/null 2>&1; then
     ln -s /usr/bin/batcat "$HOME/.local/bin/bat"

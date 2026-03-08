@@ -6,5 +6,7 @@
     "detectindent": true,
     "tabstospaces": true,
     "tabsize": 4,
-    "autoindent": true
+    "autoindent": true,
+    "softwrap": true,
+    "wordwrap": true,
 }

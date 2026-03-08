@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+sandbox-exec -f "$HOME/.sandbox/opencode-cli.sb" "$HOME/.opencode/bin/opencode"
