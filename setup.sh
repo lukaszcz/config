@@ -127,23 +127,10 @@ install_pkg_alt() {
   esac
 }
 
-install_src() {
-  local url="${1:?usage: install_src url}"
-  local archive_name="${url##*/}"
-  local build_root="${TMP_DIR}/src-${RANDOM}-${RANDOM}"
-  local archive_path="${build_root}/${archive_name}"
-  local src_dir=""
+install_src_tree() {
+  local src_dir="${1:?usage: install_src_tree src_dir source}"
+  local source="${2:?usage: install_src_tree src_dir source}"
   local justfile=""
-
-  mkdir -p "${build_root}" "${LOCAL_PREFIX}"
-
-  curl -fsSL "${url}" -o "${archive_path}"
-  tar -xf "${archive_path}" -C "${build_root}"
-
-  src_dir="$(find "${build_root}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-  if [[ -z "${src_dir}" ]]; then
-    src_dir="${build_root}"
-  fi
 
   if [[ -f "${src_dir}/justfile" ]]; then
     justfile="${src_dir}/justfile"
@@ -166,10 +153,47 @@ install_src() {
     elif [[ -f "./Cargo.toml" ]]; then
       cargo install --path . --root "${LOCAL_PREFIX}"
     else
-      echo "error: ${url} did not unpack to a supported source tree" >&2
+      echo "error: ${source} did not unpack to a supported source tree" >&2
       exit 1
     fi
   )
+}
+
+install_src() {
+  local url="${1:?usage: install_src url}"
+  local archive_name="${url##*/}"
+  local build_root="${TMP_DIR}/src-${RANDOM}-${RANDOM}"
+  local archive_path="${build_root}/${archive_name}"
+  local src_dir=""
+
+  mkdir -p "${build_root}" "${LOCAL_PREFIX}"
+
+  curl -fsSL "${url}" -o "${archive_path}"
+  tar -xf "${archive_path}" -C "${build_root}"
+
+  src_dir="$(find "${build_root}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+  if [[ -z "${src_dir}" ]]; then
+    src_dir="${build_root}"
+  fi
+
+  install_src_tree "${src_dir}" "${url}"
+}
+
+install_git() {
+  local url="${1:?usage: install_git url ref}"
+  local ref="${2:?usage: install_git url ref}"
+  local build_root="${TMP_DIR}/git-${RANDOM}-${RANDOM}"
+  local repo_dir="${build_root}/repo"
+
+  mkdir -p "${build_root}" "${LOCAL_PREFIX}"
+
+  git clone "${url}" "${repo_dir}"
+  (
+    cd "${repo_dir}"
+    git checkout "${ref}"
+  )
+
+  install_src_tree "${repo_dir}" "${url}@${ref}"
 }
 
 main() {
