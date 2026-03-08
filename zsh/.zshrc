@@ -22,6 +22,7 @@ compinit
 
 source "/opt/homebrew/opt/fzf-tab/share/fzf-tab/fzf-tab.zsh"
 source "/opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source "/opt/homebrew/opt/antidote/share/antidote/antidote.zsh"
 
 y () {
 	local tmp="$(mktemp -t yazi-cwd.XXXXXX)"
@@ -39,3 +40,4 @@ export VYPER_HOL="$HOME/dev/vyperlang/vyper-hol"
 export VYPERDIR="$HOME/dev/vyperlang/vyper"
 
 export WORDCHARS="*?_.~=&!#$%^"
+export PROMPT='%n@%m:%~$ '

@@ -148,8 +148,11 @@ install_src_tree() {
       make
       make install
     elif [[ -f "./go.mod" ]]; then
+      local go_path="${TMP_DIR}/go-${RANDOM}-${RANDOM}/path"
+      local go_cache="${TMP_DIR}/go-${RANDOM}-${RANDOM}/cache"
       mkdir -p "${LOCAL_PREFIX}/bin"
-      GOBIN="${LOCAL_PREFIX}/bin" go install .
+      mkdir -p "${go_path}" "${go_cache}"
+      GOPATH="${go_path}" GOCACHE="${go_cache}" GOBIN="${LOCAL_PREFIX}/bin" go install .
     elif [[ -f "./Cargo.toml" ]]; then
       cargo install --path . --root "${LOCAL_PREFIX}"
     else
@@ -177,6 +180,60 @@ install_src() {
   fi
 
   install_src_tree "${src_dir}" "${url}"
+}
+
+install_bin() {
+  local binary_name="${1:?usage: install_bin binary_name url}"
+  local url="${2:?usage: install_bin binary_name url}"
+  local build_root="${TMP_DIR}/bin-${RANDOM}-${RANDOM}"
+  local unpack_root="${build_root}/unpack"
+  local archive_path=""
+  local extracted_path=""
+  local -a extracted_files=()
+
+  mkdir -p "${build_root}" "${unpack_root}" "${LOCAL_PREFIX}/bin"
+
+  (
+    cd "${build_root}"
+    curl -fsSLO "${url}"
+  )
+
+  archive_path="$(find "${build_root}" -mindepth 1 -maxdepth 1 -type f | head -n 1)"
+  if [[ -z "${archive_path}" ]]; then
+    echo "error: ${url} did not download an archive" >&2
+    exit 1
+  fi
+
+  case "${archive_path}" in
+    *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz2|*.tar.xz|*.txz|*.tar.zst|*.tzst)
+      tar -xf "${archive_path}" -C "${unpack_root}"
+      ;;
+    *.zip)
+      unzip -q "${archive_path}" -d "${unpack_root}"
+      ;;
+    *.gz)
+      gzip -dc "${archive_path}" > "${unpack_root}/${binary_name}"
+      ;;
+    *.bz2)
+      bzip2 -dc "${archive_path}" > "${unpack_root}/${binary_name}"
+      ;;
+    *.xz)
+      xz -dc "${archive_path}" > "${unpack_root}/${binary_name}"
+      ;;
+    *)
+      echo "error: unsupported binary archive format: ${archive_path}" >&2
+      exit 1
+      ;;
+  esac
+
+  mapfile -t extracted_files < <(find "${unpack_root}" -type f)
+  if [[ "${#extracted_files[@]}" -ne 1 ]]; then
+    echo "error: ${url} did not unpack to a single binary" >&2
+    exit 1
+  fi
+  extracted_path="${extracted_files[0]}"
+
+  install -m 0755 "${extracted_path}" "${LOCAL_PREFIX}/bin/${binary_name}"
 }
 
 install_git() {
@@ -214,13 +271,18 @@ main() {
   mkdir -p "$HOME/.local/bin"
 
   if_os linux install_pkg zsh
+  install_pkg zsh-autosuggestions
+  install_pkg_alt zsh-antidote antidote
+  bash ./setup-zsh.sh
+  echo 'source $HOME/.zshrc.zsh' >> "$HOME/.zshrc"
 
   install_pkg gcc
   install_pkg go
   install_pkg rustup
 
   install_pkg bat
-  install_pkg fzf
+  if_os darwin install_pkg fzf
+  if_os linux install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_amd64.tar.gz"
   install_pkg micro
   install_pkg yazi
   install_pkg_alt git-delta delta
@@ -228,8 +290,10 @@ main() {
   install_pkg bfs
 
   install_pkg bash-completion
+  if_os darwin install_pkg fzf-tab
 
   install_git git@github.com:lukaszcz/mcat.git develop
+  install_git git@github.com:lukaszcz/diffnav.git develop
 
   bash ./setup-git.sh
   bash ./setup-micro.sh
