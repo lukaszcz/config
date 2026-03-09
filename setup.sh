@@ -83,9 +83,17 @@ init_tmp_dir() {
 }
 
 cleanup() {
+  local status=$?
+
   if [[ "${TMP_DIR_IS_MANAGED}" -eq 1 && -n "${TMP_DIR}" ]]; then
-    rm -rf "${TMP_DIR}"
+    # Go's module cache can mark temp files and directories read-only.
+    # Restore user-writable permissions before removing a managed temp tree.
+    find "${TMP_DIR}" -type d -exec chmod u+rwx {} + 2>/dev/null || true
+    find "${TMP_DIR}" -type f -exec chmod u+rw {} + 2>/dev/null || true
+    rm -rf "${TMP_DIR}" 2>/dev/null || true
   fi
+
+  return "${status}"
 }
 
 install_pkg() {

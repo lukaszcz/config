@@ -86,6 +86,7 @@ The scripts write directly into the current user's home directory. Notable outpu
 
 - [`setup.sh`](setup.sh): main bootstrap script
 - [`tests/install_bin_test.sh`](tests/install_bin_test.sh): regression tests for the `install_bin` helper
+- [`tests/cleanup_test.sh`](tests/cleanup_test.sh): regression test for managed temp directory cleanup
 - [`zsh/`](zsh): base and OS-specific zsh config
 - [`micro/`](micro): micro editor config
 - [`yazi/`](yazi): yazi config and plugins
@@ -96,10 +97,11 @@ The scripts write directly into the current user's home directory. Notable outpu
 
 ## Tests
 
-Run the included shell test with:
+Run the included shell tests with:
 
 ```bash
 bash ./tests/install_bin_test.sh
+bash ./tests/cleanup_test.sh
 ```
 
-This verifies the archive-handling logic used by `install_bin`.
+These verify the archive-handling logic used by `install_bin` and cleanup of managed temp directories with read-only contents.
