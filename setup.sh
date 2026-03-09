@@ -309,7 +309,9 @@ main() {
   install_pkg zsh-autosuggestions
   install_pkg_alt zsh-antidote antidote
   bash ./setup-zsh.sh
-  echo 'source $HOME/.zshinit.zsh' >> "$HOME/.zshrc"
+  if [[ ! -f "$HOME/.zshrc" ]] || ! grep -qxF 'source $HOME/.zshinit.zsh' "$HOME/.zshrc"; then
+    echo 'source $HOME/.zshinit.zsh' >> "$HOME/.zshrc"
+  fi
 
   install_pkg gcc
   install_pkg go
