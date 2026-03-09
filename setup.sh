@@ -307,7 +307,8 @@ main() {
   install_pkg go
   install_pkg rustup
 
-  install_pkg bat
+  if_os darwin install_pkg bat
+  if_os linux install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
   if_os darwin install_pkg fzf
   if_os linux install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_amd64.tar.gz"
   install_pkg micro
