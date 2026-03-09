@@ -341,8 +341,8 @@ main() {
   install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
   install_git https://github.com/lukaszcz/micro-unicode.git main
 
-  tic "${SCRIPT_DIR}/ghostty.terminfo"
-  tic "${SCRIPT_DIR}/kitty.terminfo"
+  tic "${SCRIPT_DIR}/ghostty/ghostty.terminfo"
+  tic "${SCRIPT_DIR}/kitty/kitty.terminfo"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
