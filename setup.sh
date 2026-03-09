@@ -301,7 +301,7 @@ main() {
   install_pkg zsh-autosuggestions
   install_pkg_alt zsh-antidote antidote
   bash ./setup-zsh.sh
-  echo 'source $HOME/.zshrc.zsh' >> "$HOME/.zshrc"
+  echo 'source $HOME/.zshinit.zsh' >> "$HOME/.zshrc"
 
   install_pkg gcc
   install_pkg go
@@ -328,10 +328,7 @@ main() {
   bash ./setup-yazi.sh
 
   install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
-
-  if [[ -x /usr/bin/batcat ]] && ! command -v bat >/dev/null 2>&1; then
-    ln -s /usr/bin/batcat "$HOME/.local/bin/bat"
-  fi
+  install_git https://github.com/lukaszcz/micro-unicode.git main
 
   tic "${SCRIPT_DIR}/ghostty.terminfo"
   tic "${SCRIPT_DIR}/kitty.terminfo"
