@@ -182,6 +182,36 @@ install_src() {
   install_src_tree "${src_dir}" "${url}"
 }
 
+select_installed_binary() {
+  local unpack_root="${1:?usage: select_installed_binary unpack_root}"
+  local -a extracted_files=()
+  local -a executable_files=()
+  local file=""
+
+  while IFS= read -r file; do
+    extracted_files+=("${file}")
+  done < <(find "${unpack_root}" -type f)
+
+  if [[ "${#extracted_files[@]}" -eq 1 ]]; then
+    printf '%s\n' "${extracted_files[0]}"
+    return 0
+  fi
+
+  for file in "${extracted_files[@]}"; do
+    if [[ -x "${file}" ]]; then
+      executable_files+=("${file}")
+    fi
+  done
+
+  if [[ "${#executable_files[@]}" -eq 1 ]]; then
+    printf '%s\n' "${executable_files[0]}"
+    return 0
+  fi
+
+  echo "error: ${unpack_root} did not unpack to a single binary" >&2
+  return 1
+}
+
 install_bin() {
   local binary_name="${1:?usage: install_bin binary_name url}"
   local url="${2:?usage: install_bin binary_name url}"
@@ -189,7 +219,6 @@ install_bin() {
   local unpack_root="${build_root}/unpack"
   local archive_path=""
   local extracted_path=""
-  local -a extracted_files=()
 
   mkdir -p "${build_root}" "${unpack_root}" "${LOCAL_PREFIX}/bin"
 
@@ -226,12 +255,10 @@ install_bin() {
       ;;
   esac
 
-  mapfile -t extracted_files < <(find "${unpack_root}" -type f)
-  if [[ "${#extracted_files[@]}" -ne 1 ]]; then
-    echo "error: ${url} did not unpack to a single binary" >&2
+  extracted_path="$(select_installed_binary "${unpack_root}")" || {
+    echo "error: ${url} did not unpack to a supported single-binary layout" >&2
     exit 1
-  fi
-  extracted_path="${extracted_files[0]}"
+  }
 
   install -m 0755 "${extracted_path}" "${LOCAL_PREFIX}/bin/${binary_name}"
 }
@@ -309,4 +336,6 @@ main() {
   tic "${SCRIPT_DIR}/kitty.terminfo"
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
