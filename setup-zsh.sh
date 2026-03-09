@@ -2,14 +2,14 @@
 
 set -euo pipefail
 
-cp zsh/zshrc.zsh "$HOME/.zshrc.zsh"
+cp zsh/zshinit.zsh "$HOME/.zshinit.zsh"
 
 case "$(uname -s)" in
 Darwin)
-  cat zsh/zshrc_macos.zsh >> "$HOME/.zshrc.zsh"
+  cat zsh/zshinit_macos.zsh >> "$HOME/.zshinit.zsh"
   ;;
 Linux)
-  cat zsh/zshrc_linux.zsh >> "$HOME/.zshrc.zsh"
+  cat zsh/zshinit_linux.zsh >> "$HOME/.zshinit.zsh"
   ;;
 *)
   echo "error: unsupported operating system: $(uname -s)" >&2
