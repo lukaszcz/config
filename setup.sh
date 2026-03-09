@@ -320,14 +320,14 @@ main() {
   install_pkg bash-completion
   if_os darwin install_pkg fzf-tab
 
-  install_git git@github.com:lukaszcz/mcat.git develop
-  install_git git@github.com:lukaszcz/diffnav.git develop
+  install_git https://github.com/lukaszcz/mcat.git develop
+  install_git https://github.com/lukaszcz/diffnav.git develop
 
   bash ./setup-git.sh
   bash ./setup-micro.sh
   bash ./setup-yazi.sh
 
-  install_git git@github.com:lukaszcz/micro-syntax-sml-hol4.git main
+  install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
 
   if [[ -x /usr/bin/batcat ]] && ! command -v bat >/dev/null 2>&1; then
     ln -s /usr/bin/batcat "$HOME/.local/bin/bat"

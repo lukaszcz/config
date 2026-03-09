@@ -46,7 +46,7 @@ Before running the setup:
 - Linux: use a system with `apt`; `snap` is used when available for some packages
 - have `git`, `curl`, `tar`, and `unzip` available
 - have `sudo` access for package installation on Linux
-- have GitHub SSH access configured for `git@github.com:lukaszcz/...` repositories
+- have network access to clone GitHub repositories over HTTPS
 
 ## Usage
 
