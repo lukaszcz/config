@@ -334,6 +334,8 @@ main() {
   install_git https://github.com/lukaszcz/mcat.git develop
   install_git https://github.com/lukaszcz/diffnav.git develop
 
+  install_git https://github.com/lukaszcz/devtools.git main
+
   bash ./setup-git.sh
   bash ./setup-micro.sh
   bash ./setup-yazi.sh
