@@ -2,6 +2,7 @@
 
 git config --global user.name "Łukasz Czajka"
 git config --global user.email "lukaszcz@mimuw.edu.pl"
+git config --global pull.rebase true
 git config --global core.pager delta
 
 git config --global alias.st "status -sb"
