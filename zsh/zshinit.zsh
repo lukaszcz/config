@@ -4,6 +4,8 @@ export PATH="$HOME/.local/bin:$HOME/.local/go/bin:$PATH"
 export EDITOR=micro
 export VISUAL=micro
 
+export LESS=FR
+
 alias ls="ls --color -h"
 alias pg="less -r"
 alias download="curl -fSLO"
