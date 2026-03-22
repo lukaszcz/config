@@ -316,7 +316,9 @@ main() {
   install_pkg gcc
   install_pkg go
   install_pkg rustup
+
   install_pkg just
+  install_pkg ripgrep
 
   if_os darwin install_pkg bat
   if_os linux install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
