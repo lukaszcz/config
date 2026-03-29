@@ -271,6 +271,11 @@ install_bin() {
   install -m 0755 "${extracted_path}" "${LOCAL_PREFIX}/bin/${binary_name}"
 }
 
+install_gah() {
+  local repo="${1:?usage: install_gah repo_name}"
+  gah install "${repo}" --unattended
+}
+
 install_git() {
   local url="${1:?usage: install_git url ref}"
   local ref="${2:?usage: install_git url ref}"
@@ -305,6 +310,11 @@ main() {
 
   mkdir -p "$HOME/.local/bin"
 
+  install_pkg unzip
+
+  # install gah
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/get-gah/gah/refs/heads/master/tools/install.sh)"
+
   if_os linux install_pkg zsh
   install_pkg zsh-autosuggestions
   install_pkg_alt zsh-antidote antidote
@@ -329,6 +339,8 @@ main() {
   install_pkg_alt git-delta delta
   install_pkg par
   install_pkg bfs
+  install_gah lazygit
+  if_os linux install_gah lazydocker
 
   install_pkg bash-completion
   if_os darwin install_pkg fzf-tab
