@@ -327,7 +327,7 @@ main() {
   install_pkg go
   install_pkg rustup
 
-  install_pkg just
+  install_gah casey/just
   install_pkg ripgrep
 
   if_os darwin install_pkg bat
