@@ -328,13 +328,14 @@ main() {
   install_pkg rustup
 
   install_gah casey/just
-  install_pkg ripgrep
+  install_gah burntsushi/ripgrep
 
   if_os darwin install_pkg bat
   if_os linux install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
   if_os darwin install_pkg fzf
   if_os linux install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_amd64.tar.gz"
-  install_pkg micro
+  if_os darwin install_pkg micro
+  if_os linux install_bin micro "https://github.com/micro-editor/micro/releases/download/v2.0.15/micro-2.0.15-linux64-static.tar.gz"
   install_pkg yazi
   install_pkg_alt git-delta delta
   install_pkg par
