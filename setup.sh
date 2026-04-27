@@ -474,11 +474,15 @@ config_yazi() {
 
 all() {
   mkdir -p "$HOME/.local/bin"
+  export PATH="$HOME/.local/bin:$PATH"
 
   install_pkg unzip
 
   # install gah
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/get-gah/gah/refs/heads/master/tools/install.sh)"
+
+  # install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 
   if_os linux install_pkg zsh
   install_pkg zsh-autosuggestions
@@ -491,6 +495,8 @@ all() {
   install_pkg gcc
   install_pkg go
   install_pkg rustup
+
+  rustup default stable
 
   install_gah casey/just
   install_gah burntsushi/ripgrep
