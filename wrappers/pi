@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-exec sandbox.sh -f "$HOME/.sandbox/pi.json" /usr/bin/pi "$@"
