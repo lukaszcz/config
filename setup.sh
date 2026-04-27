@@ -11,7 +11,18 @@ TMP_DIR_IS_MANAGED=0
 
 usage() {
   cat <<EOF
-Usage: $0 [--tmp-dir PATH]
+Usage: $0 [--tmp-dir PATH] <command> [args...]
+       $0 [--tmp-dir PATH]
+
+Commands:
+  all                    Run the full setup.
+  config_git             Configure Git settings.
+  config_micro           Install Micro config and plugins.
+  config_yazi            Install Yazi config.
+  help                   Show this help text.
+
+You can also invoke internal function names directly, for example:
+  $0 install_gah repo_name
 
 Options:
   -t, --tmp-dir PATH  Use PATH as the shared temp directory.
@@ -19,7 +30,103 @@ Options:
 EOF
 }
 
+command_usage() {
+  local command="${1:?usage: command_usage command}"
+
+  case "${command}" in
+    all)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] all
+
+Run the full setup workflow.
+EOF
+      ;;
+    config_git)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] config_git
+
+Configure global Git settings and aliases.
+EOF
+      ;;
+    config_micro)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] config_micro
+
+Install Micro configuration files and plugins.
+EOF
+      ;;
+    config_yazi)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] config_yazi
+
+Install Yazi configuration files.
+EOF
+      ;;
+    install_gah)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_gah repo_name
+
+Install a package using gah.
+EOF
+      ;;
+    install_pkg)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_pkg package
+
+Install a package with the detected system package manager.
+EOF
+      ;;
+    install_pkg_alt)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_pkg_alt apt_package brew_package
+
+Install OS-specific package names via the detected package manager.
+EOF
+      ;;
+    install_src)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_src url
+
+Download, unpack, and install a source archive.
+EOF
+      ;;
+    install_bin)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_bin binary_name url
+
+Download and install a single-binary release archive.
+EOF
+      ;;
+    install_git)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] install_git url ref
+
+Clone a Git repository at a specific ref and install it from source.
+EOF
+      ;;
+    if_os)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] if_os os command [args...]
+
+Run a command only when the detected OS matches.
+EOF
+      ;;
+    help)
+      usage
+      ;;
+    *)
+      echo "error: unknown command: ${command}" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
 parse_args() {
+  COMMAND=""
+  COMMAND_ARGS=()
+  SHOW_HELP=0
+
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -t|--tmp-dir)
@@ -35,13 +142,14 @@ parse_args() {
         shift
         ;;
       -h|--help)
-        usage
-        exit 0
+        SHOW_HELP=1
+        shift
         ;;
       *)
-        echo "error: unknown argument: $1" >&2
-        usage >&2
-        exit 1
+        COMMAND="$1"
+        shift
+        COMMAND_ARGS=("$@")
+        return
         ;;
     esac
   done
@@ -302,12 +410,41 @@ if_os() {
   "${cmd}" "$@"
 }
 
-main() {
-  parse_args "$@"
-  detect_system
-  init_tmp_dir
-  trap cleanup EXIT
+config_git() {
+  git config --global user.name "Łukasz Czajka"
+  git config --global user.email "lukaszcz@mimuw.edu.pl"
+  git config --global pull.rebase true
+  git config --global init.defaultBranch main
+  git config --global core.pager delta
 
+  git config --global alias.st "status -sb"
+  git config --global alias.co checkout
+  git config --global alias.br branch
+  git config --global alias.ci commit
+  git config --global alias.wt worktree
+  git config --global alias.lg "log --oneline -10"
+  git config --global alias.lgs "log --oneline"
+  git config --global alias.dt '!git -c diff.external=difft diff'
+  git config --global alias.difft '!git -c diff.external=difft diff'
+  git config --global alias.diffnav '!f() { git diff "$@" | diffnav -u; }; f'
+  git config --global alias.dn '!git diff "$@" | diffnav -u'
+}
+
+config_micro() {
+  mkdir -p "$HOME/.config/micro"
+  cp -r "${SCRIPT_DIR}/micro/"*.json "$HOME/.config/micro/"
+  micro -plugin install wc
+  micro -plugin install autofmt
+  micro -plugin install detectindent
+  micro -plugin install go
+}
+
+config_yazi() {
+  mkdir -p "$HOME/.config/yazi/"
+  cp -r "${SCRIPT_DIR}/yazi/"* "$HOME/.config/yazi/"
+}
+
+all() {
   mkdir -p "$HOME/.local/bin"
 
   install_pkg unzip
@@ -351,15 +488,79 @@ main() {
 
   install_git https://github.com/lukaszcz/devtools.git main
 
-  bash ./setup-git.sh
-  bash ./setup-micro.sh
-  bash ./setup-yazi.sh
+  config_git
+  config_micro
+  config_yazi
 
   install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
   install_git https://github.com/lukaszcz/micro-unicode.git main
 
   tic "${SCRIPT_DIR}/ghostty/ghostty.terminfo"
   tic "${SCRIPT_DIR}/kitty/kitty.terminfo"
+}
+
+dispatch_command() {
+  local command="${1:-help}"
+  shift || true
+
+  case "${command}" in
+    help)
+      usage
+      ;;
+    all)
+      all "$@"
+      ;;
+    config_git)
+      config_git "$@"
+      ;;
+    config_micro)
+      config_micro "$@"
+      ;;
+    config_yazi)
+      config_yazi "$@"
+      ;;
+    *)
+      if declare -F "${command}" >/dev/null 2>&1; then
+        "${command}" "$@"
+      else
+        echo "error: unknown command: ${command}" >&2
+        usage >&2
+        exit 1
+      fi
+      ;;
+  esac
+}
+
+main() {
+  parse_args "$@"
+
+  if [[ -z "${COMMAND}" ]]; then
+    if [[ "${SHOW_HELP}" -eq 1 ]]; then
+      usage
+      exit 0
+    fi
+
+    COMMAND="all"
+  fi
+
+  if [[ "${SHOW_HELP}" -eq 1 ]]; then
+    command_usage "${COMMAND}"
+    exit 0
+  fi
+
+  if [[ "${#COMMAND_ARGS[@]}" -gt 0 ]]; then
+    case "${COMMAND_ARGS[-1]}" in
+      -h|--help)
+        command_usage "${COMMAND}"
+        exit 0
+        ;;
+    esac
+  fi
+
+  detect_system
+  init_tmp_dir
+  trap cleanup EXIT
+  dispatch_command "${COMMAND}" "${COMMAND_ARGS[@]}"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
