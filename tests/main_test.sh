@@ -24,7 +24,7 @@ run_test_main_defaults_to_all() {
 
   detect_system() {
     printf '%s\n' detect_system >> "${log_file}"
-    OS="linux"
+    OS="linux-amd64"
     PKG_MANAGER="apt"
   }
 
@@ -118,4 +118,3 @@ run_test_main_help_prints_usage_without_initializing_system
 run_test_main_command_help_uses_command_usage
 run_test_dispatch_command_runs_internal_functions
 run_test_dispatch_command_rejects_unknown_commands
-

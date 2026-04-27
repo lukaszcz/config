@@ -113,7 +113,7 @@ run_test_install_src_extracts_flat_archives() {
 
 run_test_config_zsh_combines_base_and_linux_overrides() {
   setup_test_env
-  OS="linux"
+  OS="linux-amd64"
 
   config_zsh
 

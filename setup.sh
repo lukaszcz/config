@@ -174,7 +174,18 @@ detect_system() {
       }
       ;;
     Linux)
-      OS="linux"
+      case "$(uname -m)" in
+        x86_64|amd64)
+          OS="linux-amd64"
+          ;;
+        aarch64|arm64)
+          OS="linux-arm64"
+          ;;
+        *)
+          echo "error: unsupported Linux architecture: $(uname -m)" >&2
+          exit 1
+          ;;
+      esac
       PKG_MANAGER="apt"
       command -v apt >/dev/null 2>&1 || {
         echo "error: apt is required on Linux" >&2
@@ -414,7 +425,17 @@ if_os() {
   local cmd="${2:?usage: if_os os command [args...]}"
   shift 2
 
-  [[ "${OS}" == "${expected_os}" ]] || return 0
+  if [[ "${OS}" != "${expected_os}" ]]; then
+    case "${OS}" in
+      "${expected_os}"-*)
+        :
+        ;;
+      *)
+        return 0
+        ;;
+    esac
+  fi
+
   "${cmd}" "$@"
 }
 
@@ -427,7 +448,7 @@ config_zsh() {
       cat "${SCRIPT_DIR}/zsh/zshinit_macos.zsh" >> "$HOME/.zshinit.zsh"
       cat "${SCRIPT_DIR}/zsh/zsh_plugins_macos.txt" >> "$HOME/.zsh_plugins.txt"
       ;;
-    linux)
+    linux|linux-*)
       cat "${SCRIPT_DIR}/zsh/zshinit_linux.zsh" >> "$HOME/.zshinit.zsh"
       cat "${SCRIPT_DIR}/zsh/zsh_plugins_linux.txt" >> "$HOME/.zsh_plugins.txt"
       ;;
@@ -502,11 +523,14 @@ all() {
   install_gah burntsushi/ripgrep
 
   if_os darwin install_pkg bat
-  if_os linux install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
+  if_os linux-amd64 install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
+  if_os linux-arm64 install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-aarch64-unknown-linux-gnu.tar.gz"
   if_os darwin install_pkg fzf
-  if_os linux install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_amd64.tar.gz"
+  if_os linux-amd64 install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_amd64.tar.gz"
+  if_os linux-arm64 install_bin fzf "https://github.com/junegunn/fzf/releases/download/v0.70.0/fzf-0.70.0-linux_arm64.tar.gz"
   if_os darwin install_pkg micro
-  if_os linux install_bin micro "https://github.com/micro-editor/micro/releases/download/v2.0.15/micro-2.0.15-linux64-static.tar.gz"
+  if_os linux-amd64 install_bin micro "https://github.com/micro-editor/micro/releases/download/v2.0.15/micro-2.0.15-linux64-static.tar.gz"
+  if_os linux-arm64 install_bin micro "https://github.com/micro-editor/micro/releases/download/v2.0.15/micro-2.0.15-linux-arm64.tar.gz"
   install_pkg yazi
   install_pkg_alt git-delta delta
   install_pkg par

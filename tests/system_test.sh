@@ -4,14 +4,27 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/testlib.sh"
 
-run_test_detect_system_linux_uses_apt() {
+run_test_detect_system_linux_amd64_uses_apt() {
   setup_test_env
-  make_stub uname 'echo Linux'
+  make_stub uname 'if [[ "${1:-}" == "-s" ]]; then echo Linux; else echo x86_64; fi'
   make_stub apt 'exit 0'
 
   detect_system
 
-  assert_eq "linux" "${OS}"
+  assert_eq "linux-amd64" "${OS}"
+  assert_eq "apt" "${PKG_MANAGER}"
+
+  teardown_test_env
+}
+
+run_test_detect_system_linux_arm64_uses_apt() {
+  setup_test_env
+  make_stub uname 'if [[ "${1:-}" == "-s" ]]; then echo Linux; else echo aarch64; fi'
+  make_stub apt 'exit 0'
+
+  detect_system
+
+  assert_eq "linux-arm64" "${OS}"
   assert_eq "apt" "${PKG_MANAGER}"
 
   teardown_test_env
@@ -19,7 +32,7 @@ run_test_detect_system_linux_uses_apt() {
 
 run_test_detect_system_darwin_uses_brew() {
   setup_test_env
-  make_stub uname 'echo Darwin'
+  make_stub uname 'if [[ "${1:-}" == "-s" ]]; then echo Darwin; else echo arm64; fi'
   make_stub brew 'exit 0'
 
   detect_system
@@ -32,12 +45,24 @@ run_test_detect_system_darwin_uses_brew() {
 
 run_test_detect_system_rejects_unsupported_os() {
   setup_test_env
-  make_stub uname 'echo FreeBSD'
+  make_stub uname 'if [[ "${1:-}" == "-s" ]]; then echo FreeBSD; else echo amd64; fi'
 
   run_capture detect_system
 
   assert_eq "1" "${RUN_STATUS}"
   assert_contains "${RUN_STDERR}" "error: unsupported operating system: FreeBSD"
+
+  teardown_test_env
+}
+
+run_test_detect_system_rejects_unsupported_linux_architecture() {
+  setup_test_env
+  make_stub uname 'if [[ "${1:-}" == "-s" ]]; then echo Linux; else echo riscv64; fi'
+
+  run_capture detect_system
+
+  assert_eq "1" "${RUN_STATUS}"
+  assert_contains "${RUN_STDERR}" "error: unsupported Linux architecture: riscv64"
 
   teardown_test_env
 }
@@ -102,26 +127,47 @@ run_test_cleanup_leaves_unmanaged_directory() {
 
 run_test_if_os_runs_only_matching_commands() {
   setup_test_env
-  OS="linux"
+  OS="linux-amd64"
 
   log_marker() {
     printf '%s\n' "$1" >> "${STUB_LOG}"
   }
 
   if_os linux log_marker matched
+  if_os linux-amd64 log_marker exact
+  if_os linux-arm64 log_marker wrong-arch
   if_os darwin log_marker skipped
 
-  assert_eq "matched" "$(cat "${STUB_LOG}")"
+  assert_eq $'matched\nexact' "$(cat "${STUB_LOG}")"
 
   teardown_test_env
 }
 
-run_test_detect_system_linux_uses_apt
+run_test_if_os_matches_linux_arm64_family() {
+  setup_test_env
+  OS="linux-arm64"
+
+  log_marker() {
+    printf '%s\n' "$1" >> "${STUB_LOG}"
+  }
+
+  if_os linux log_marker matched
+  if_os linux-arm64 log_marker exact
+  if_os linux-amd64 log_marker wrong-arch
+
+  assert_eq $'matched\nexact' "$(cat "${STUB_LOG}")"
+
+  teardown_test_env
+}
+
+run_test_detect_system_linux_amd64_uses_apt
+run_test_detect_system_linux_arm64_uses_apt
 run_test_detect_system_darwin_uses_brew
 run_test_detect_system_rejects_unsupported_os
+run_test_detect_system_rejects_unsupported_linux_architecture
 run_test_init_tmp_dir_respects_explicit_directory
 run_test_init_tmp_dir_creates_managed_directory
 run_test_cleanup_removes_managed_readonly_tree
 run_test_cleanup_leaves_unmanaged_directory
 run_test_if_os_runs_only_matching_commands
-
+run_test_if_os_matches_linux_arm64_family

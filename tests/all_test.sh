@@ -9,10 +9,11 @@ run_test_all_orchestrates_linux_setup_and_keeps_zshrc_idempotent() {
   local all_log="${TEST_ROOT}/all.log"
   : > "${all_log}"
 
-  OS="linux"
+  OS="linux-amd64"
   PKG_MANAGER="apt"
   make_stub curl 'printf "echo installed-gah\n"'
   make_stub tic 'printf "tic:%s\n" "$*" >> "${STUB_LOG}"'
+  make_stub rustup 'printf "rustup:%s\n" "$*" >> "${STUB_LOG}"'
   cat > "${TEST_BIN}/bash" <<EOF
 #!/bin/bash
 printf 'bash:%s\n' "\$*" >> "${STUB_LOG}"
