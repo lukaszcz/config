@@ -16,6 +16,7 @@ Usage: $0 [--tmp-dir PATH] <command> [args...]
 
 Commands:
   all                    Run the full setup.
+  config_zsh             Install Zsh configuration files.
   config_git             Configure Git settings.
   config_micro           Install Micro config and plugins.
   config_yazi            Install Yazi config.
@@ -39,6 +40,13 @@ command_usage() {
 Usage: $0 [--tmp-dir PATH] all
 
 Run the full setup workflow.
+EOF
+      ;;
+    config_zsh)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] config_zsh
+
+Install Zsh configuration files.
 EOF
       ;;
     config_git)
@@ -410,6 +418,26 @@ if_os() {
   "${cmd}" "$@"
 }
 
+config_zsh() {
+  cp "${SCRIPT_DIR}/zsh/zshinit.zsh" "$HOME/.zshinit.zsh"
+  cp "${SCRIPT_DIR}/zsh/zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
+
+  case "${OS}" in
+    darwin)
+      cat "${SCRIPT_DIR}/zsh/zshinit_macos.zsh" >> "$HOME/.zshinit.zsh"
+      cat "${SCRIPT_DIR}/zsh/zsh_plugins_macos.txt" >> "$HOME/.zsh_plugins.txt"
+      ;;
+    linux)
+      cat "${SCRIPT_DIR}/zsh/zshinit_linux.zsh" >> "$HOME/.zshinit.zsh"
+      cat "${SCRIPT_DIR}/zsh/zsh_plugins_linux.txt" >> "$HOME/.zsh_plugins.txt"
+      ;;
+    *)
+      echo "error: unsupported operating system: ${OS}" >&2
+      exit 1
+      ;;
+  esac
+}
+
 config_git() {
   git config --global user.name "Łukasz Czajka"
   git config --global user.email "lukaszcz@mimuw.edu.pl"
@@ -455,7 +483,7 @@ all() {
   if_os linux install_pkg zsh
   install_pkg zsh-autosuggestions
   install_pkg_alt zsh-antidote antidote
-  bash ./setup-zsh.sh
+  config_zsh
   if [[ ! -f "$HOME/.zshrc" ]] || ! grep -qxF 'source $HOME/.zshinit.zsh' "$HOME/.zshrc"; then
     echo 'source $HOME/.zshinit.zsh' >> "$HOME/.zshrc"
   fi
@@ -487,6 +515,7 @@ all() {
   install_git https://github.com/lukaszcz/diffnav.git develop
 
   install_git https://github.com/lukaszcz/devtools.git main
+  install_git https://github.com/lukaszcz/agm.git main
 
   config_git
   config_micro
@@ -509,6 +538,9 @@ dispatch_command() {
       ;;
     all)
       all "$@"
+      ;;
+    config_zsh)
+      config_zsh "$@"
       ;;
     config_git)
       config_git "$@"
