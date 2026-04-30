@@ -505,9 +505,6 @@ all() {
   # install uv
   curl -LsSf https://astral.sh/uv/install.sh | sh
 
-  # install nvm
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-
   if_os linux install_pkg zsh
   install_pkg zsh-autosuggestions
   install_pkg_alt zsh-antidote antidote
@@ -561,6 +558,20 @@ all() {
 
   tic "${SCRIPT_DIR}/ghostty/ghostty.terminfo"
   tic "${SCRIPT_DIR}/kitty/kitty.terminfo"
+
+  # install nvm
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+
+  zsh -c "nvm install node"
+
+  # install claude
+  curl -fsSL https://claude.ai/install.sh | bash
+
+  # install pi
+  zsh -c 'npm install -g @mariozechner/pi-coding-agent'
+
+  # install codex
+  zsh -c 'npm i -g @openai/codex'
 }
 
 dispatch_command() {
