@@ -592,7 +592,7 @@ all() {
   zsh -c 'source ~/.zshrc && npm i -g @openai/codex'
 
   # install Anthropic Sandbox Runtime
-  zsh -c 'soure ~/.zshrc && npm install -g @anthropic-ai/sandbox-runtime'
+  zsh -c 'source ~/.zshrc && npm install -g @anthropic-ai/sandbox-runtime'
 }
 
 dispatch_command() {
