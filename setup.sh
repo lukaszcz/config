@@ -544,7 +544,7 @@ all() {
   if_os darwin install_pkg fzf-tab
 
   install_git https://github.com/lukaszcz/mcat.git develop
-  install_git https://github.com/lukaszcz/diffnav.git develop
+  install_git https://github.com/lukaszcz/diffnav-extra.git extra
 
   install_git https://github.com/lukaszcz/devtools.git main
   install_git https://github.com/lukaszcz/agm.git main
@@ -554,6 +554,7 @@ all() {
   config_yazi
 
   install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
+  install_git https://github.com/lukaszcz/micro-vyper.git main
   install_git https://github.com/lukaszcz/micro-unicode.git main
 
   tic "${SCRIPT_DIR}/ghostty/ghostty.terminfo"
@@ -562,16 +563,16 @@ all() {
   # install nvm
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
-  zsh -c "nvm install node"
+  zsh -c "source ~/.zshrc && nvm install node"
 
   # install claude
   curl -fsSL https://claude.ai/install.sh | bash
 
   # install pi
-  zsh -c 'npm install -g @mariozechner/pi-coding-agent'
+  zsh -c 'source ~/.zshrc && npm install -g @mariozechner/pi-coding-agent'
 
   # install codex
-  zsh -c 'npm i -g @openai/codex'
+  zsh -c 'source ~/.zshrc && npm i -g @openai/codex'
 }
 
 dispatch_command() {
