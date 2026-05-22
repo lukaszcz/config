@@ -527,6 +527,7 @@ all() {
   install_gah burntsushi/ripgrep
 
   if_os linux install_pkg socat
+  if_os linux install_pkg bubblewrap
 
   if_os darwin install_pkg bat
   if_os linux-amd64 install_bin bat "https://github.com/sharkdp/bat/releases/download/v0.26.1/bat-v0.26.1-x86_64-unknown-linux-gnu.tar.gz"
@@ -578,6 +579,9 @@ all() {
 
   # install codex
   zsh -c 'source ~/.zshrc && npm i -g @openai/codex'
+
+  # install Anthropic Sandbox Runtime
+  zsh -c 'soure ~/.zshrc && npm install -g @anthropic-ai/sandbox-runtime'
 }
 
 dispatch_command() {
