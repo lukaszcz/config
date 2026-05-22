@@ -42,6 +42,7 @@ reset_setup_state() {
   PKG_MANAGER=""
   TMP_DIR=""
   TMP_DIR_IS_MANAGED=0
+  NO_SUDO=0
   LOCAL_PREFIX="${HOME}/.local"
 }
 

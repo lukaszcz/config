@@ -32,6 +32,23 @@ run_test_install_pkg_falls_back_to_apt_after_snap_failures() {
   teardown_test_env
 }
 
+run_test_install_pkg_skips_apt_installs_with_no_sudo() {
+  setup_test_env
+  PKG_MANAGER="apt"
+  NO_SUDO=1
+  make_stub sudo 'printf "sudo:%s\n" "$*" >> "${STUB_LOG}"; "$@"'
+  make_stub snap 'printf "snap:%s\n" "$*" >> "${STUB_LOG}"'
+  make_stub apt 'printf "apt:%s\n" "$*" >> "${STUB_LOG}"'
+
+  run_capture install_pkg demo
+
+  assert_eq "0" "${RUN_STATUS}"
+  assert_eq "" "$(cat "${STUB_LOG}")"
+  assert_contains "${RUN_STDERR}" "skipping demo: installing apt packages requires sudo"
+
+  teardown_test_env
+}
+
 run_test_install_pkg_uses_brew_on_darwin() {
   setup_test_env
   PKG_MANAGER="brew"
@@ -183,6 +200,7 @@ run_test_install_bin_rejects_ambiguous_archives() {
 
 run_test_install_pkg_prefers_snap_when_available
 run_test_install_pkg_falls_back_to_apt_after_snap_failures
+run_test_install_pkg_skips_apt_installs_with_no_sudo
 run_test_install_pkg_uses_brew_on_darwin
 run_test_install_pkg_alt_selects_os_specific_package
 run_test_select_installed_binary_supports_single_file_and_single_exec

@@ -8,11 +8,12 @@ OS=""
 PKG_MANAGER=""
 TMP_DIR=""
 TMP_DIR_IS_MANAGED=0
+NO_SUDO=0
 
 usage() {
   cat <<EOF
-Usage: $0 [--tmp-dir PATH] <command> [args...]
-       $0 [--tmp-dir PATH]
+Usage: $0 [--tmp-dir PATH] [--no-sudo] <command> [args...]
+       $0 [--tmp-dir PATH] [--no-sudo]
 
 Commands:
   all                    Run the full setup.
@@ -27,6 +28,7 @@ You can also invoke internal function names directly, for example:
 
 Options:
   -t, --tmp-dir PATH  Use PATH as the shared temp directory.
+      --no-sudo       Skip installation commands that require sudo.
   -h, --help          Show this help text.
 EOF
 }
@@ -37,84 +39,84 @@ command_usage() {
   case "${command}" in
     all)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] all
+Usage: $0 [--tmp-dir PATH] [--no-sudo] all
 
 Run the full setup workflow.
 EOF
       ;;
     config_zsh)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] config_zsh
+Usage: $0 [--tmp-dir PATH] [--no-sudo] config_zsh
 
 Install Zsh configuration files.
 EOF
       ;;
     config_git)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] config_git
+Usage: $0 [--tmp-dir PATH] [--no-sudo] config_git
 
 Configure global Git settings and aliases.
 EOF
       ;;
     config_micro)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] config_micro
+Usage: $0 [--tmp-dir PATH] [--no-sudo] config_micro
 
 Install Micro configuration files and plugins.
 EOF
       ;;
     config_yazi)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] config_yazi
+Usage: $0 [--tmp-dir PATH] [--no-sudo] config_yazi
 
 Install Yazi configuration files.
 EOF
       ;;
     install_gah)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_gah repo_name
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_gah repo_name
 
 Install a package using gah.
 EOF
       ;;
     install_pkg)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_pkg package
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_pkg package
 
 Install a package with the detected system package manager.
 EOF
       ;;
     install_pkg_alt)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_pkg_alt apt_package brew_package
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_pkg_alt apt_package brew_package
 
 Install OS-specific package names via the detected package manager.
 EOF
       ;;
     install_src)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_src url
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_src url
 
 Download, unpack, and install a source archive.
 EOF
       ;;
     install_bin)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_bin binary_name url
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_bin binary_name url
 
 Download and install a single-binary release archive.
 EOF
       ;;
     install_git)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] install_git url ref
+Usage: $0 [--tmp-dir PATH] [--no-sudo] install_git url ref
 
 Clone a Git repository at a specific ref and install it from source.
 EOF
       ;;
     if_os)
       cat <<EOF
-Usage: $0 [--tmp-dir PATH] if_os os command [args...]
+Usage: $0 [--tmp-dir PATH] [--no-sudo] if_os os command [args...]
 
 Run a command only when the detected OS matches.
 EOF
@@ -147,6 +149,10 @@ parse_args() {
         ;;
       --tmp-dir=*)
         TMP_DIR="${1#*=}"
+        shift
+        ;;
+      --no-sudo)
+        NO_SUDO=1
         shift
         ;;
       -h|--help)
@@ -228,6 +234,11 @@ install_pkg() {
 
   case "${PKG_MANAGER}" in
     apt)
+      if [[ "${NO_SUDO}" -eq 1 ]]; then
+        echo "skipping ${package}: installing apt packages requires sudo" >&2
+        return 0
+      fi
+
       if command -v snap >/dev/null 2>&1; then
         sudo snap install "${package}" || sudo snap install --classic "${package}" || sudo apt install -y "${package}"
       else

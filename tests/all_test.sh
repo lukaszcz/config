@@ -14,9 +14,11 @@ run_test_all_orchestrates_linux_setup_and_keeps_zshrc_idempotent() {
   make_stub curl 'printf "echo installed-gah\n"'
   make_stub tic 'printf "tic:%s\n" "$*" >> "${STUB_LOG}"'
   make_stub rustup 'printf "rustup:%s\n" "$*" >> "${STUB_LOG}"'
+  make_stub zsh 'printf "zsh:%s\n" "$*" >> "${STUB_LOG}"'
   cat > "${TEST_BIN}/bash" <<EOF
 #!/bin/bash
 printf 'bash:%s\n' "\$*" >> "${STUB_LOG}"
+cat >/dev/null
 EOF
   chmod +x "${TEST_BIN}/bash"
 

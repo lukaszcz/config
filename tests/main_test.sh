@@ -7,10 +7,11 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/testlib.sh"
 run_test_parse_args_extracts_options_and_command() {
   setup_test_env
 
-  parse_args --tmp-dir "${TEST_TMP}/shared" config_yazi alpha beta
+  parse_args --tmp-dir "${TEST_TMP}/shared" --no-sudo config_yazi alpha beta
 
   assert_eq "config_yazi" "${COMMAND}"
   assert_eq "${TEST_TMP}/shared" "${TMP_DIR}"
+  assert_eq "1" "${NO_SUDO}"
   assert_eq "alpha" "${COMMAND_ARGS[0]}"
   assert_eq "beta" "${COMMAND_ARGS[1]}"
 
@@ -43,10 +44,11 @@ run_test_main_defaults_to_all() {
     printf '%s\n' cleanup >> "${log_file}"
   }
 
-  main
+  main --no-sudo
   trap - EXIT
 
   assert_eq $'detect_system\ninit_tmp_dir\ndispatch:all' "$(cat "${log_file}")"
+  assert_eq "1" "${NO_SUDO}"
 
   teardown_test_env
 }
