@@ -493,6 +493,10 @@ config_yazi() {
   cp -r "${SCRIPT_DIR}/yazi/"* "$HOME/.config/yazi/"
 }
 
+config_tmux() {
+  cp "${SCRIPT_DIR}/tmux/.tmux.conf" "$HOME/"
+}
+
 all() {
   mkdir -p "$HOME/.local/bin"
   export PATH="$HOME/.local/bin:$PATH"
@@ -552,6 +556,7 @@ all() {
   config_git
   config_micro
   config_yazi
+  config_tmux
 
   install_git https://github.com/lukaszcz/micro-syntax-sml-hol4.git main
   install_git https://github.com/lukaszcz/micro-vyper.git main
