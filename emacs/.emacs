@@ -24,3 +24,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Delete trailing whitespace on save (for code-like buffers)
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
+
+(global-auto-revert-mode 1)
+
+(setq make-backup-files nil)
