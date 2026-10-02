@@ -21,10 +21,20 @@ Commands:
   config_git             Configure Git settings.
   config_micro           Install Micro config and plugins.
   config_yazi            Install Yazi config.
+  config_tmux            Install Tmux config.
   help                   Show this help text.
 
-You can also invoke internal function names directly, for example:
-  $0 install_gah repo_name
+Installation commands:
+  install_pkg package                    Install a system package.
+  install_pkg_alt apt_package brew_package
+                                         Install OS-specific package names.
+  install_gah repo_name                   Install a package using gah.
+  install_src url                        Download and install a source archive.
+  install_bin binary_name url            Download and install a binary archive.
+  install_git url ref                    Install a Git repository at a ref.
+  if_os os command [args...]             Run a command only on the matching OS.
+
+Use <command> --help for command usage and argument details.
 
 Options:
   -t, --tmp-dir PATH  Use PATH as the shared temp directory.
@@ -70,6 +80,13 @@ EOF
 Usage: $0 [--tmp-dir PATH] [--no-sudo] config_yazi
 
 Install Yazi configuration files.
+EOF
+      ;;
+    config_tmux)
+      cat <<EOF
+Usage: $0 [--tmp-dir PATH] [--no-sudo] config_tmux
+
+Install Tmux configuration files.
 EOF
       ;;
     install_gah)
