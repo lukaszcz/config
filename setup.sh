@@ -28,10 +28,10 @@ Installation commands:
   install_pkg package                    Install a system package.
   install_pkg_alt apt_package brew_package
                                          Install OS-specific package names.
-  install_gah repo_name                   Install a package using gah.
+  install_gah repo_name                  Install a package using gah.
   install_src url                        Download and install a source archive.
   install_bin binary_name url            Download and install a binary archive.
-  install_git url ref                    Install a Git repository at a ref.
+  install_git url ref                    Install from Git repository source.
   if_os os command [args...]             Run a command only on the matching OS.
 
 Use <command> --help for command usage and argument details.
@@ -128,7 +128,8 @@ EOF
       cat <<EOF
 Usage: $0 [--tmp-dir PATH] [--no-sudo] install_git url ref
 
-Clone a Git repository at a specific ref and install it from source.
+Clone a Git repository, check out the specified branch, tag, or commit,
+and install from source.
 EOF
       ;;
     if_os)

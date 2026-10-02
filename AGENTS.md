@@ -8,4 +8,4 @@ Main setup script: `setup.sh`
 
 ## Instructions
 
-- When finished, verify with `just test`
+- When finished, verify with `just test` and commit.
