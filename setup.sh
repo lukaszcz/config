@@ -579,6 +579,7 @@ all() {
 
   install_git https://github.com/lukaszcz/mcat.git develop
   install_git https://github.com/lukaszcz/diffnav-extra.git extra
+  install_git https://github.com/lukaszcz/jless-extra.git extra
 
   install_git https://github.com/lukaszcz/devtools.git main
   install_git https://github.com/lukaszcz/agm.git main
